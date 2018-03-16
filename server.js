@@ -37,8 +37,9 @@ app.use(express.static("public"));
 
 // By default mongoose uses callbacks for async queries, we're setting it to use promises (.then syntax) instead
 // Connect to the Mongo DB
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongo-news-scraper";
 mongoose.Promise = Promise;
-mongoose.connect("mongodb://localhost/mongo-news-scraper", {
+mongoose.connect(MONGODB_URI, {
   useMongoClient: true
 });
 
@@ -76,7 +77,7 @@ app.get("/saved", function(req, res) {
   });
 });
 
-// A GET request to scrape the echojs website
+// A GET request to scrape the  website
 app.get("/scrape", function(req, res) {
   // First, we grab the body of the html with request
   request("https://www.nytimes.com/", function(error, response, html) {
@@ -94,7 +95,7 @@ app.get("/scrape", function(req, res) {
       result.link = $(this).children("h2").children("a").attr("href");
 
       // Using our Article model, create a new entry
-      // This effectively passes the result object to the entry (and the title and link)
+      // passes the result object to the entry (and the title and link)
       var entry = new Article(result);
 
       // Now, save that entry to the db
